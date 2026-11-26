@@ -35,10 +35,11 @@ body{margin:0}
 :root[data-theme="dark"]{--hero-bg:#5f6d59;--hero-ink:#f2f5ee;--ink:#ecf0e8;--paper:#161a15;--card:#1f251d;--mut:#aab6a3;--line:#323b2f;--btn:#eef2ea;--btn-ink:#1b1f19;color-scheme:dark}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--paper);color:var(--ink);font:300 17px/1.65 var(--f-body)}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.65 var(--f-body)}
 .in{max-width:1040px;margin:0 auto;padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 a{color:inherit}
 h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance}
+h1,h2,h3,.svc-list li{-webkit-text-stroke:.45px currentColor}
 :focus-visible{outline:2px solid currentColor;outline-offset:3px}
 
 .top{background:var(--sage);color:#2b2b2e}
@@ -58,9 +59,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 
 .contact-band .in{padding-block:40px 20px}
 .contact-band + section{padding-top:32px}
+#ubicacion{padding-bottom:28px}
+#servicios{padding-top:20px}
 .contact{max-width:520px;margin:0 auto;background:var(--card);color:var(--ink);border:1px solid var(--line);padding:28px;display:grid;gap:22px}
 .contact h2{font-size:1.7rem}
-.phone{font-family:var(--f-display);font-size:2.3rem;line-height:1;letter-spacing:.02em;font-variant-numeric:lining-nums}
+.phone{font-family:var(--f-body);font-weight:500;font-size:2.2rem;line-height:1;letter-spacing:.03em}
 .phone small{display:block;font-family:var(--f-body);font-size:.85rem;color:var(--mut);letter-spacing:0;margin-bottom:6px}
 .stack{display:grid;gap:10px}
 .group h3{font-family:var(--f-body);font-size:.9rem;font-weight:500;margin-bottom:10px;color:var(--mut)}
@@ -116,9 +119,9 @@ figcaption,.tag{position:absolute;left:12px;top:12px;background:rgba(43,43,46,.8
 
 .book{background:var(--sage);text-align:center;color:#2b2b2e}
 .book .in{padding-block:76px 84px}
-.wa{display:flex;align-items:center;justify-content:center;gap:14px;font-family:var(--f-display);font-size:clamp(2.2rem,8vw,4rem);color:#fff;letter-spacing:.02em;margin:18px 0 0;font-variant-numeric:lining-nums;flex-wrap:wrap}
+.wa{display:flex;align-items:center;justify-content:center;gap:14px;font-family:var(--f-body);font-weight:500;font-size:clamp(2.1rem,8vw,3.6rem);color:#2b2b2e;letter-spacing:.03em;margin:18px 0 0;font-variant-numeric:lining-nums;flex-wrap:wrap}
 .wa svg{width:.8em;height:.8em;flex:none}
-.book .script{font-family:var(--f-script);font-size:clamp(2.4rem,7vw,3.8rem);color:#fff;line-height:1;margin:4px 0 22px}
+.book .script{font-family:var(--f-script);font-size:clamp(2.4rem,7vw,3.8rem);color:#2b2b2e;line-height:1;margin:4px 0 22px}
 .acts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .book .btn{background:#2b2b2e;color:#fff;border-color:#2b2b2e}
 .book .btn.line{background:transparent;color:#2b2b2e}
@@ -145,7 +148,13 @@ figcaption,.tag{position:absolute;left:12px;top:12px;background:rgba(43,43,46,.8
 footer{background:var(--sage);color:#2b2b2e;border-top:1px solid rgba(43,43,46,.25)}
 footer .in{padding-block:24px;display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;font-size:.95rem}
 footer a{text-underline-offset:3px}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero .txt > *{animation:up .8s ease both}
+.hero .txt > :nth-child(2){animation-delay:.12s}
+.hero .txt > :nth-child(3){animation-delay:.24s}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;transition-delay:var(--d,0s)}
+.reveal.shown{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero .txt > *{animation:none}.reveal{opacity:1!important;transform:none!important;transition:none}}
 </style>
 
 </head>
@@ -322,6 +331,19 @@ var WHATSAPP        = "50687944710";
   b.addEventListener("click",function(){set(m.hidden)});
   m.addEventListener("click",function(e){if(e.target.closest("a"))set(false)});
   document.addEventListener("keydown",function(e){if(e.key==="Escape")set(false)});
+})();
+
+(function(){
+  if(!("IntersectionObserver" in window)||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var els=document.querySelectorAll(".contact, #ubicacion h2, .box, #servicios h2, .svc-list li, .cases h2, .cases .lead, .case, .book .in > *");
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("shown");io.unobserve(e.target)}});
+  },{threshold:.12,rootMargin:"0px 0px -6% 0px"});
+  els.forEach(function(el){
+    var par=el.parentNode, i=Array.prototype.indexOf.call(par.children,el);
+    if(el.matches("li,.box,.book .in > *")) el.style.setProperty("--d",(Math.min(i,5)*0.08)+"s");
+    el.classList.add("reveal"); io.observe(el);
+  });
 })();
 </script>
 </body>
